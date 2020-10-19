@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css?family=Saira:700');
+@import url('https://fonts.googleapis.com/css?family=Courgette&display=swap');
+
+@font-face {
+  font-family: 'Streamster';
+  src: url('/fonts/Streamster.ttf');
+}
+@font-face {
+  font-family: 'Joystix';
+  src: url('/fonts/joystix.ttf');
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
