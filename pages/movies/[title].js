@@ -5,6 +5,10 @@ import { jsx, css } from '@emotion/core';
 import { movies } from "../../util/database";
 import Layout from '../../components/Layout.js';
 import Head from 'next/head';
+import Link from 'next/link';
+import cookie from 'js-cookie';
+import nextCookies from 'next-cookies';
+
 
 const mainStyle = css`
 display: flex;
@@ -33,13 +37,11 @@ export default function Movie (props) {
     <>
     <Layout>
   <div css={mainStyle}>
-   
     <h1>{props.title}</h1>
     <h2>{movie.actor}</h2>
     <h5>price:${movie.price}</h5>
-    <h4>{movie.info}</h4>
-    <img src={movie.image} height="500px" alt={movie.title} />
-    
+    <h4>{movie.info}</h4>,
+    <img src={movie.image} height="500px" alt={movie.title} /> 
     
  </div>
  </Layout>
@@ -49,7 +51,6 @@ export default function Movie (props) {
 
 export function getServerSideProps(context) {
   return {
-    props: { title: context.query.title},
-    
+    props: { title: context.query.title},    
   };
 }

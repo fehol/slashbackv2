@@ -2,6 +2,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Layout from '../components/Layout.js';
 import styles from '../styles/Home.module.css';
+import cookie from 'js-cookie';
+import nextCookies from 'next-cookies';
 
 export default function Home() {
   return (
