@@ -4,56 +4,83 @@
 import { jsx, css } from '@emotion/core';
 import Link from 'next/link';
 import Layout from '../../components/Layout.js';
-import Head from 'next/head';
-import {movies} from '../../database'
+import {movies} from '../../util/database'
+import {useState, useEffect} from 'react';
+import Cookies from 'js-cookie';
+import { buttonStyleJoystix } from '../../components/Styles.js';
 
 
-export const mainStyle = css`
-  margin: 0;
-  text-decoration: none;
-  padding: 0;
-  font-family: 'Saira', sans-serif;
-   background-image: linear-gradient(
+const flexContainer = css `
+display: flex;
+flex-wrap: wrap;
+font-size: 12px;
+background: linear-gradient(
     to bottom,
     #8900ba,
     #2a61ed,
     #8900ba,
-    black);
-    column-count: 3;
+    black
+  );
 `;
 
+const containerItem = css `
+padding: 2%;
+flex: 1 16%;
+`
+
+
+const movieImage = css `
+cursor: url('https://cur.cursors-4u.net/people/peo-4/peo359.cur'), auto !important;
+`
+
+Cookies.set('cart', 'true', {expires: 14}); 
+
+const myCookie = Cookies.get('cart')
+
+if(myCookie){
+
+}
+
+
 export default function movieList() {
+  const [cart, setCart] = useState([]);
+
+
+ const addtoCart = (movie) => {
+    setCart([...cart, movie])
+  };
+
+
+
   return (
     <>
-    <Head><title>Movie-List</title></Head>
-      <Layout>
-        <div css={mainStyle}>
-          <h1>Movie List</h1>
-          <ul>
+    <Layout>
+     <div>
+       <Link href="/cart"><button css={buttonStyleJoystix}>Go to cart({cart.length})</button></Link>
+        <div css={flexContainer}>       
             {movies.map((movie) => {
               return (
-              <li key={movie.id}>
+              <div css={containerItem} key={movie.id}>
+                <h2>{movie.title}</h2>
+                <h4>${movie.price}</h4>
                 <Link href={`/movies/${movie.title}`}>
                   <a>
-                    <h2>{movie.title}</h2>
-                    <img src={movie.image} height="300px" alt={movie.title} />
-                    <h4>${movie.price}</h4>
-                    <button>
-                    Add to Cart
-                    </button>
+                  <img css={movieImage} src={movie.image} width="200px" height="350px" alt={movie.title} />
                   </a>
                 </Link>
-              </li>
-              );
+                <button css={buttonStyleJoystix} onClick={() => addtoCart(movie)}>
+                    Add to Cart
+                </button >
+                
+              </div>);
             })}
-          </ul>
-        </div>
-      </Layout>
+          </div>
+ </div>
+ </Layout>
     </>
   );
 }
 
-// What I did here:
-// I set up the Array with the Movie Data
-// I maped over it and showed the specific Data from the "Databank"
-// Then I dynamic Linked the Movies
+// export funtion getServerSideProps(context) {
+//   const allCo
+// }

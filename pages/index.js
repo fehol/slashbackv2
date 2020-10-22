@@ -11,8 +11,8 @@ export default function Home() {
       </Head>
       <Layout>
         <main>
-          <div className={styles.body}>
-            <div className={styles.wrapper}>
+          <main className={styles.body}>
+            <main className={styles.wrapper}>
               <Link href="/movies/movie-list">
                 <h1 className={styles.h1} data-text="Slashback">
                   Slashback
@@ -21,11 +21,11 @@ export default function Home() {
               <h2 className={styles.h2} data-text="VideoStore">
                 Video Store
               </h2>
-            </div>
-            <div className={styles.graphContainer}>
-              <div className={styles.graph}></div>
-            </div>
-          </div>
+            </main>
+            <main className={styles.graphContainer}>
+              <main className={styles.graph}></main>
+            </main>
+          </main>
         </main>
        
       </Layout>
