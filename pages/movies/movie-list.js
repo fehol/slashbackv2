@@ -5,118 +5,136 @@ import { jsx, css } from '@emotion/core';
 import Link from 'next/link';
 import Layout from '../../components/Layout.js';
 import { buttonStyleJoystix } from '../../components/Styles.js';
-import {movies} from '../../util/database'
-import {useState, useEffect} from 'react';
-import cookie from 'js-cookie';
+import { moviesData } from '../../util/database';
+import { useState, useEffect } from 'react';
 import nextCookies from 'next-cookies';
+import { addMovieCookie } from '../../util/cookies.js';
 
-const h1Style= css `
-display: flex;
-text-align: center;
-`
-
-
-
-const flexContainer = css `
-display: flex;
-flex-wrap: wrap;
-font-size: 12px;
-
-background: linear-gradient(
-    to bottom,
-    #8900ba,
-    #2a61ed,
-    #8900ba,
-    black
-  );
+const container = css`
+  display: flex;
+  background: linear-gradient(to bottom, #8900ba, #2a61ed, #8900ba);
+  padding: 10px;
+  flex-direction: column;
 `;
-
-const containerItem = css `
-padding: 2%;
-flex: 1 16%;
-`
-const movieImage = css `
-cursor: url('https://cur.cursors-4u.net/people/peo-4/peo359.cur'), auto !important;
-`
-
+const listStyle = css`
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  width: 250px;
+  justify-content: flex-end;
+  align-items: center;
+`;
+const box1 = css`
+  font-size: 30px;
+  display: flex;
+  flex-wrap: wrap;
+`;
 
 export default function MovieList(props) {
   const [cart, setCart] = useState([]);
-  const [alert, setAlert] = useState("");
+  const [alert, setAlert] = useState('');
   const [cartTotal, setCartTotal] = useState(0);
 
-useEffect(() => {
-    total();
-  }, [cart]);
- const total = () => {
+  console.log(props.getMovieCart);
+
+  useEffect(() => {
     let totalVal = 0;
     for (let i = 0; i < cart.length; i++) {
       totalVal += cart[i].price;
     }
     setCartTotal(totalVal);
-  };
+  }, [cart]);
 
   const addToCart = (movie) => {
     let addIt = true;
     for (let i = 0; i < cart.length; i++) {
       if (cart[i].id === movie.id) addIt = false;
     }
- if (addIt) {
+    if (addIt) {
       setCart([...cart, movie]);
+      addMovieCookie(movie.id);
 
-     setAlert("");
-    } else setAlert(`Chill out ${movie.title} its already in your cart`);
+      setAlert('');
+    } else setAlert(`Chill out "${movie.title}" is already in your cart`);
   };
 
-   const removeFromCart = (movie) => {
+  const removeFromCart = (movie) => {
     let hardCopy = [...cart];
     hardCopy = hardCopy.filter((cartItem) => cartItem.id !== movie.id);
     setCart(hardCopy);
-    setAlert("");
+    setAlert('');
   };
 
-   const listItems = movies.map((movie) => (
-
-    <div key={movie.id}>
-      <h4>{`${movie.title}: $${movie.price}}`}</h4>
+  const listItems = moviesData.map((movie) => (
+    <div css={listStyle} key={movie.id}>
+      {`${movie.title}: $${movie.price}`}
       <Link href={`/movies/${movie.title}`}>
-                  <a>
-      <img src={movie.image} width="150" height="200" alt={movie.title}/></a></Link>
-      <input css={buttonStyleJoystix} type="submit" value="add" onClick={() => addToCart(movie)}></input>
+        <a>
+          <img src={movie.image} width="200" height="300" alt={movie.title} />
+        </a>
+      </Link>
+      <button
+        css={buttonStyleJoystix}
+        onClick={() => addToCart(movie)}
+        // here I have to put in the cookie and than let it use addtoCart
+      >
+        add to Cart
+      </button>
     </div>
-  
   ));
 
-    const cartItems = cart.map((movie) => (
-    <div key={movie.id}>
+  const cartItems = cart.map((movie) => (
+    <div css={listStyle} key={movie.id}>
       {`${movie.title}: $${movie.price}`}
-      <img src={movie.image} width="100px" height="150px" alt={movie.title}/>
-      <input css={buttonStyleJoystix}
+      <img src={movie.image} width="150px" height="200px" alt={movie.title} />
+      <button
+        css={buttonStyleJoystix}
         type="submit"
         value="remove"
         onClick={() => removeFromCart(movie)}
-      ></input>
+      >
+        remove
+      </button>
     </div>
   ));
-// const addtoCart = (movie) => {
-//     setCart([...cart, movie])
-//  };
 
+  // const allItems = moviesData.filter((movie) => {
+  //   <div css={listStyle} key={movie.id}>
+  //     {`${movie.title}: $${movie.price}`}
+  //     <img src={movie.image} width="150px" height="200px" alt={movie.title}/>
+  //   </div>
+  //   };
 
   return (
-    <>
     <Layout>
-       <div><h1 css={h1Style}>SHOP</h1></div>
-      <div css={flexContainer}>
-        
-      <div css={containerItem}><h2>{listItems}</h2></div>
-      <div css={containerItem}><h2>{cartItems}</h2></div>
-      <div><h1>Total:{cartTotal}</h1></div>
-      <div css={containerItem}><h1>{alert}</h1></div>
-    
- </div>
- </Layout>
-    </>
+      <div css={container}>
+        <div css={box1}>{listItems}</div>
+
+        <div css={box1}>{cartItems}</div>
+
+        <div css={box1}>Total: ${cartTotal}</div>
+
+        <div css={box1}>{alert}</div>
+      </div>
+    </Layout>
   );
 }
 
+export async function getServerSideProps(context) {
+  const { getMoviesData } = await import('../../util/database');
+  const movies = await getMoviesData();
+  const allCookies = nextCookies(context);
+  const getMovieCart = allCookies.movieCart || [];
+  console.log(movies);
+
+  return {
+    props: {
+      getMovieCart,
+      movies: movies,
+    },
+  };
+}
+
+// Ich brauch eine Funktion die den State und das Cookie verbindet.
+// Array der Datenbank gleicht mit einem Array des Cookies die Daten ab und wenn etwas gleich
+//ist dann displayed er das auf der Seite.
